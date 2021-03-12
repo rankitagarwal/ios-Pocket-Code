@@ -2,7 +2,7 @@
 //  ImageviewManager.swift
 //  tempi
 //
-//  Created by Rankit on 12/03/21.
+//  Created by Rankit on 12/01/21.
 //  Copyright © 2021 Rankit. All rights reserved.
 //
 
