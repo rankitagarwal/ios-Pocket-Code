@@ -14,16 +14,18 @@ import UIKit
 class APICalling:NSObject{
     /**
      This Function is used to call get api.
-
+     
      - parameter url: url with base url.
      - parameter paramet: To pass any parameter.
      - parameter header: If any header is needed to pass.
      - returns: dictionary which can use for decodable.
-
+     
      # Notes: #
      1.
      2.
-    */
+     */
+    
+    //    func getApiData<T:Decodable>(strUrl: String, resultType: T.Type, completionHandler:@escaping(_ result: T?)-> Void)
     func getRequestWithHeader(url:String,header:[String : String]?, controlller:UIViewController,success:@escaping (Dictionary<String, AnyObject>) -> Void, failed:@escaping (String) -> Void) {
         
         let sessionConfig = URLSessionConfiguration.default
@@ -36,22 +38,27 @@ class APICalling:NSObject{
         let datatask = session.dataTask(with: URL(string: url)!) { (data, response, error) in
             if error == nil,data != nil {
                 do{
+//                    1.Use dierctly
+                    
+                    //                    let result = try decoder.decode(T.self, from: responseData!)
+                    //                    _=completionHandler(result)
+//                    2.Convert in dict and pass
                     if let dict = try JSONSerialization.jsonObject(with: data!, options: []) as? Dictionary<String,AnyObject> {
                         
                         success(dict)
                         // Now you can use it by this code when needed
-//                        if let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) {
-//                            do {
-//                                let finalResult = try JSONDecoder().decode(Model_name.self,from: jsonData)
-//                            }catch{
-//                                print("error")
-//                            }
-//                        }
+                        //                        if let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) {
+                        //                            do {
+                        //                                let finalResult = try JSONDecoder().decode(Model_name.self,from: jsonData)
+                        //                            }catch{
+                        //                                print("error")
+                        //                            }
+                        //                        }
                         
                     }
                     else
                     {
-                        failed("Error reason")
+                        debugPrint("Error reason")
                     }
                 } catch let error
                 {
@@ -80,25 +87,32 @@ class APICalling:NSObject{
      1.
      2.
      */
-    
-    func postRequestWithHeaderAndParam(url:String,params:[String:AnyObject]?,header:[String : String]?, controlller:UIViewController,success:@escaping (Dictionary<String, AnyObject>) -> Void, failed:@escaping (String) -> Void) {
+//    func postApiData<T:Decodable>(requestUrl: URL, requestBody: Data, resultType: T.Type, completionHandler:@escaping(_ result: T)-> Void)
+
+    func postRequestWithHeaderAndParam(url:String,params:[String:[Any]]?,header:[String : String]?, controlller:UIViewController,success:@escaping (Dictionary<String, AnyObject>) -> Void, failed:@escaping (String) -> Void) {
         
         if(Reachability.isConnectedToNetwork()){
             let session = URLSession.shared
             
             var urlreq = URLRequest(url: URL(string: url)!, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 60)
             urlreq.httpMethod = "POST"
-            urlreq.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-            urlreq.addValue("text/html", forHTTPHeaderField:"accept")
+//            urlreq.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+            urlreq.addValue("application/json", forHTTPHeaderField: "content-type")
+
+//            urlreq.addValue("text/html", forHTTPHeaderField:"accept")
             urlreq.timeoutInterval = TimeInterval(integerLiteral: Int64(60))
             
             if params != nil{
+//                urlRequest.httpBody = requestBody
+
                 urlreq.httpBody = try? JSONSerialization.data(withJSONObject: params!, options: [])
             }
             
             let datatask = session.dataTask(with: urlreq) { (data, response, error) in
                 if error == nil,data != nil {
                     do{
+//                        let response = try JSONDecoder().decode(T.self, from: data!)
+
                         if let dict = try JSONSerialization.jsonObject(with: data!, options: []) as? Dictionary<String,AnyObject> {
                             
                             success(dict)
@@ -127,5 +141,5 @@ class APICalling:NSObject{
             debugPrint("no internet alert")
         }
     }
-
+    
 }
